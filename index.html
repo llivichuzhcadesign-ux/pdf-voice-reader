@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="PDF Voice" />
+  <title>PDF Voice Reader</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <aside id="library" aria-label="Saved PDF library">
+    <h1>PDF Voice</h1>
+    <p class="intro">Free web app version. Save PDFs here and continue reading later on this device.</p>
+    <label class="upload">Add PDF<input id="fileInput" type="file" accept="application/pdf" multiple hidden></label>
+    <div class="urlBox" aria-label="Open online PDF">
+      <label for="pdfUrlInput">Open PDF link</label>
+      <input id="pdfUrlInput" type="url" inputmode="url" autocomplete="off" autocapitalize="none" placeholder="https://example.com/file.pdf" />
+      <button id="openUrlBtn" type="button">Open & Save Link</button>
+      <p class="miniNote">Some websites block direct opening. When that happens, download the PDF to Files and use Add PDF.</p>
+    </div>
+    <div id="installBox" class="installBox">
+      <strong>iPhone install</strong>
+      <span>Open this site in Safari → Share → Add to Home Screen.</span>
+    </div>
+    <div id="status" aria-live="polite"></div>
+    <h2>Saved PDFs</h2>
+    <div id="pdfList"></div>
+  </aside>
+
+  <main>
+    <header id="toolbar" aria-label="Reader controls">
+      <div class="controlGroup primaryControls">
+        <button id="playBtn">Read</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="continueBtn">Continue</button>
+        <button id="stopBtn">Stop</button>
+        <button id="resumeBtn">Resume</button>
+        <button id="invertBtn" class="toggle" aria-pressed="false">Invert PDF: Off</button>
+      </div>
+
+      <div class="controlGroup flowControls" aria-label="Voice flow controls">
+        <label>Style
+          <select id="styleSelect">
+            <option value="smooth">Smooth</option>
+            <option value="podcast">Podcast</option>
+            <option value="study">Study</option>
+            <option value="exact">Exact</option>
+          </select>
+        </label>
+        <label>Preset
+          <select id="presetSelect">
+            <option value="podcast">Podcast</option>
+            <option value="clear">Clear</option>
+            <option value="soft">Soft</option>
+            <option value="slowStudy">Slow Study</option>
+          </select>
+        </label>
+        <label class="browserOnly">Voice <select id="voiceSelect"></select></label>
+        <label>Speed <input id="rate" type="range" min="0.65" max="1.35" step="0.05" value="0.92"><span id="rateValue">0.92</span></label>
+        <label>Pitch <input id="pitch" type="range" min="0.75" max="1.25" step="0.05" value="1"><span id="pitchValue">1.00</span></label>
+        <button id="advancedToggle" class="smallBtn" aria-expanded="false">Flow settings</button>
+      </div>
+
+      <div id="advancedControls" class="advancedControls" hidden>
+        <label>Sentence pause <input id="sentencePause" type="range" min="0" max="1400" step="50" value="450"><span id="sentencePauseValue">450ms</span></label>
+        <label>Paragraph pause <input id="paragraphPause" type="range" min="0" max="2200" step="50" value="900"><span id="paragraphPauseValue">900ms</span></label>
+        <label>Heading pause <input id="headingPause" type="range" min="0" max="2600" step="50" value="1200"><span id="headingPauseValue">1200ms</span></label>
+      </div>
+
+      <span id="docTitle">No PDF selected</span>
+    </header>
+    <section id="viewer">
+      <div class="empty welcome">
+        <strong>PDF Voice Reader Web</strong><br>
+        Add a PDF file or paste a direct PDF link. Your library and progress are saved locally in this browser.
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
+    }
+  </script>
+</body>
+</html>
