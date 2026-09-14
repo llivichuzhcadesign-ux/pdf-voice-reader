@@ -25,10 +25,30 @@
       body[data-mobile-view="reader"] main {
         display: flex;
       }
+
+      body[data-reader-pane="text"] .pdfPreview,
+      body[data-reader-pane="pdf"] .textReader {
+        display: none;
+      }
+
+      body[data-reader-pane="text"] .textReader,
+      body[data-reader-pane="pdf"] .pdfPreview {
+        display: block;
+        min-height: 100%;
+      }
+
+      body[data-reader-pane="pdf"] .pdfEmbed {
+        height: calc(100vh - 210px - env(safe-area-inset-bottom));
+        min-height: 58vh;
+      }
+
+      body[data-reader-pane="pdf"] #mobileInvertBtn {
+        display: inline-grid;
+      }
     }
   </style>
 </head>
-<body data-mobile-view="library">
+<body data-mobile-view="library" data-reader-pane="text" data-playback="idle">
   <aside id="library" aria-label="Saved PDF library">
     <h1>Orbit</h1>
     <p class="intro">eyes-free.</p>
@@ -55,7 +75,14 @@
           <strong>Read, Pause, Mark.</strong>
           <span id="mobileDocTitle">No PDF selected</span>
         </div>
-        <button id="mobileSettingsBtn" class="smallBtn iconBtn" type="button" aria-label="Settings" title="Settings" aria-expanded="false"><span class="settingsIcon" aria-hidden="true"></span></button>
+        <div class="mobileReaderTools" aria-label="Reader view controls">
+          <div class="paneSwitch" role="group" aria-label="Reader view">
+            <button id="mobileTextViewBtn" type="button" class="active" aria-pressed="true">Text</button>
+            <button id="mobilePdfViewBtn" type="button" aria-pressed="false">PDF</button>
+          </div>
+          <button id="mobileInvertBtn" class="smallBtn invertIconBtn" type="button" aria-label="Invert PDF" title="Invert PDF"><span aria-hidden="true">Invert</span></button>
+          <button id="mobileSettingsBtn" class="smallBtn iconBtn" type="button" aria-label="Settings" title="Settings" aria-expanded="false"><span class="settingsIcon" aria-hidden="true"></span></button>
+        </div>
       </div>
 
       <div class="controlGroup primaryControls">
@@ -115,13 +142,9 @@
       <span class="dockIcon dockReaderIcon" aria-hidden="true"></span>
       <span>Reader</span>
     </button>
-    <button id="dockRead" type="button" class="dockButton dockPrimary" aria-label="Read">
-      <span class="dockIcon dockReadIcon" aria-hidden="true"></span>
-      <span>Read</span>
-    </button>
-    <button id="dockPause" type="button" class="dockButton" aria-label="Pause">
-      <span class="dockIcon dockPauseIcon" aria-hidden="true"></span>
-      <span>Pause</span>
+    <button id="dockReadPause" type="button" class="dockButton dockPrimary dockReadPause" aria-label="Read" aria-pressed="false">
+      <span class="dockMorphIcon" aria-hidden="true"><span></span><span></span></span>
+      <span class="dockReadPauseLabel">Read</span>
     </button>
     <button id="dockMark" type="button" class="dockButton dockMark" aria-label="Mark" disabled>
       <span class="dockIcon dockDotIcon" aria-hidden="true"></span>
@@ -141,20 +164,66 @@
       document.getElementById('dockReader')?.setAttribute('aria-pressed', String(!libraryActive));
     }
 
+    function orbitSetReaderPane(pane) {
+      const nextPane = pane === 'pdf' ? 'pdf' : 'text';
+      document.body.dataset.readerPane = nextPane;
+      const textActive = nextPane === 'text';
+      document.getElementById('mobileTextViewBtn')?.classList.toggle('active', textActive);
+      document.getElementById('mobilePdfViewBtn')?.classList.toggle('active', !textActive);
+      document.getElementById('mobileTextViewBtn')?.setAttribute('aria-pressed', String(textActive));
+      document.getElementById('mobilePdfViewBtn')?.setAttribute('aria-pressed', String(!textActive));
+    }
+
+    function orbitSetPlayback(state) {
+      const nextState = state === 'playing' || state === 'paused' ? state : 'idle';
+      document.body.dataset.playback = nextState;
+      const button = document.getElementById('dockReadPause');
+      const label = button?.querySelector('.dockReadPauseLabel');
+      const isPlaying = nextState === 'playing';
+      if (button) {
+        button.setAttribute('aria-label', isPlaying ? 'Pause' : 'Read');
+        button.setAttribute('aria-pressed', String(isPlaying));
+      }
+      if (label) label.textContent = isPlaying ? 'Pause' : 'Read';
+    }
+
+    function orbitRefreshPlayback() {
+      if (speechSynthesis.paused) orbitSetPlayback('paused');
+      else if (speechSynthesis.speaking) orbitSetPlayback('playing');
+      else if (document.body.dataset.playback !== 'idle') orbitSetPlayback('idle');
+    }
+
     document.getElementById('dockLibrary')?.addEventListener('click', () => orbitSetMobileView('library'));
     document.getElementById('dockReader')?.addEventListener('click', () => orbitSetMobileView('reader'));
-    document.getElementById('dockRead')?.addEventListener('click', () => {
+    document.getElementById('dockReadPause')?.addEventListener('click', () => {
       orbitSetMobileView('reader');
+      if (document.body.dataset.playback === 'playing') {
+        document.getElementById('pauseBtn')?.click();
+        orbitSetPlayback('paused');
+        return;
+      }
+      if (document.body.dataset.playback === 'paused') {
+        document.getElementById('continueBtn')?.click();
+        orbitSetPlayback('playing');
+        return;
+      }
       document.getElementById('playBtn')?.click();
+      orbitSetPlayback('playing');
     });
-    document.getElementById('dockPause')?.addEventListener('click', () => document.getElementById('pauseBtn')?.click());
+    document.getElementById('mobileTextViewBtn')?.addEventListener('click', () => orbitSetReaderPane('text'));
+    document.getElementById('mobilePdfViewBtn')?.addEventListener('click', () => orbitSetReaderPane('pdf'));
+    document.getElementById('mobileInvertBtn')?.addEventListener('click', () => document.getElementById('invertBtn')?.click());
     document.getElementById('mobileSettingsBtn')?.addEventListener('click', () => {
       document.body.classList.toggle('settingsOpen');
       document.getElementById('mobileSettingsBtn')?.setAttribute('aria-expanded', String(document.body.classList.contains('settingsOpen')));
     });
     document.addEventListener('click', event => {
-      if (event.target.closest('.pdfItem')) setTimeout(() => orbitSetMobileView('reader'), 0);
+      if (event.target.closest('.pdfItem')) {
+        orbitSetReaderPane('text');
+        setTimeout(() => orbitSetMobileView('reader'), 0);
+      }
     });
+    setInterval(orbitRefreshPlayback, 700);
     if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
     }
