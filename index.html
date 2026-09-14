@@ -45,6 +45,145 @@
       body[data-reader-pane="pdf"] #mobileInvertBtn {
         display: inline-grid;
       }
+
+      .mobileTopLine {
+        grid-template-columns: minmax(0, 1fr) auto;
+      }
+
+      .mobileReaderTools {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .paneSwitch {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(46px, 1fr));
+        gap: 3px;
+        padding: 3px;
+        border: 1px solid rgba(130, 140, 150, .18);
+        border-radius: 999px;
+        background: linear-gradient(180deg, rgba(22, 25, 30, .86), rgba(7, 8, 10, .84));
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 12px 24px rgba(0,0,0,.22);
+      }
+
+      .paneSwitch button {
+        min-width: 0;
+        height: 34px;
+        padding: 0 10px;
+        border: 0;
+        border-radius: 999px;
+        background: transparent;
+        color: #8f97a1;
+        font-size: 11px;
+        font-weight: 900;
+        box-shadow: none;
+      }
+
+      .paneSwitch button.active {
+        background: linear-gradient(180deg, rgba(255,255,255,.14), rgba(255,255,255,.055));
+        color: #fff;
+      }
+
+      #mobileInvertBtn {
+        display: none;
+        height: 40px;
+        min-width: 58px;
+        padding: 0 12px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 900;
+        border-color: rgba(130,139,150,.24);
+        background: linear-gradient(180deg,#171b20,#0b0d10);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 12px 22px rgba(0,0,0,.22);
+      }
+
+      body[data-reader-pane="pdf"] #viewer {
+        height: calc(100% - 65px);
+      }
+
+      body[data-reader-pane="pdf"] .readerGrid {
+        height: 100%;
+      }
+
+      body[data-reader-pane="pdf"] .pdfPreview {
+        height: 100%;
+      }
+
+      .mobileDock {
+        grid-template-columns: 1fr 1fr 1.15fr 1fr;
+      }
+
+      .dockReadPause {
+        position: relative;
+        overflow: hidden;
+      }
+
+      .dockReadPause::before {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border-radius: 24px;
+        background: radial-gradient(circle at 50% 35%, rgba(255,255,255,.13), transparent 64%);
+        opacity: .72;
+        transform: scale(.92);
+        transition: opacity .32s ease, transform .32s ease;
+      }
+
+      body[data-playback="playing"] .dockReadPause::before {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .dockMorphIcon {
+        position: relative;
+        display: block;
+        width: 28px;
+        height: 28px;
+        filter: drop-shadow(0 8px 15px rgba(0,0,0,.4));
+        z-index: 1;
+      }
+
+      .dockMorphIcon span {
+        position: absolute;
+        top: 4px;
+        bottom: 4px;
+        left: 8px;
+        width: 18px;
+        border-radius: 3px;
+        background: currentColor;
+        clip-path: polygon(0 0, 100% 50%, 0 100%);
+        transform-origin: 50% 50%;
+        transition: left .28s ease, width .28s ease, border-radius .28s ease, clip-path .28s ease, opacity .2s ease, transform .28s ease;
+      }
+
+      .dockMorphIcon span:last-child {
+        opacity: 0;
+        transform: scale(.72);
+      }
+
+      body[data-playback="playing"] .dockMorphIcon span {
+        left: 6px;
+        width: 7px;
+        border-radius: 5px;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+
+      body[data-playback="playing"] .dockMorphIcon span:last-child {
+        left: 16px;
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .dockReadPauseLabel {
+        position: relative;
+        z-index: 1;
+        transition: opacity .18s ease, transform .22s ease;
+      }
+
+      body[data-playback="playing"] .dockReadPauseLabel {
+        transform: translateY(-1px);
+      }
     }
   </style>
 </head>
