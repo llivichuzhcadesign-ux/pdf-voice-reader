@@ -11,6 +11,22 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    @media (max-width: 700px) {
+      body[data-mobile-view="library"] #library {
+        height: calc(100vh - 96px - env(safe-area-inset-bottom));
+        border-bottom: 0;
+      }
+
+      body[data-mobile-view="library"] main {
+        display: none;
+      }
+
+      body[data-mobile-view="reader"] main {
+        display: flex;
+      }
+    }
+  </style>
 </head>
 <body data-mobile-view="library">
   <aside id="library" aria-label="Saved PDF library">
