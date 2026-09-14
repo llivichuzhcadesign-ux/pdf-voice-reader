@@ -6,26 +6,26 @@
   <meta name="theme-color" content="#000000" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="PDF Voice" />
-  <title>PDF Voice Reader</title>
+  <meta name="apple-mobile-web-app-title" content="Orbit" />
+  <title>Orbit</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body data-mobile-view="library">
   <aside id="library" aria-label="Saved PDF library">
-    <h1>PDF Voice</h1>
-    <p class="intro">Free web app version. Save PDFs here and continue reading later on this device.</p>
+    <h1>Orbit</h1>
+    <p class="intro">eyes-free.</p>
     <label class="upload">Add PDF<input id="fileInput" type="file" accept="application/pdf" multiple hidden></label>
     <div class="urlBox" aria-label="Open online PDF">
       <label for="pdfUrlInput">Open PDF link</label>
       <input id="pdfUrlInput" type="url" inputmode="url" autocomplete="off" autocapitalize="none" placeholder="https://example.com/file.pdf" />
       <button id="openUrlBtn" type="button">Open & Save Link</button>
-      <p class="miniNote">Some websites block direct opening. When that happens, download the PDF to Files and use Add PDF.</p>
+      <p class="miniNote">If a site blocks direct opening, download the PDF and use Add PDF.</p>
     </div>
     <div id="installBox" class="installBox">
       <strong>iPhone install</strong>
-      <span>Open this site in Safari → Share → Add to Home Screen.</span>
+      <span>Safari → Share → Add to Home Screen.</span>
     </div>
     <div id="status" aria-live="polite"></div>
     <h2>Saved PDFs</h2>
@@ -34,6 +34,14 @@
 
   <main>
     <header id="toolbar" aria-label="Reader controls">
+      <div class="mobileTopLine">
+        <div>
+          <strong>Read, Pause, Mark.</strong>
+          <span id="mobileDocTitle">No PDF selected</span>
+        </div>
+        <button id="mobileSettingsBtn" class="smallBtn" type="button" aria-expanded="false">Settings</button>
+      </div>
+
       <div class="controlGroup primaryControls">
         <button id="playBtn">Read</button>
         <button id="pauseBtn">Pause</button>
@@ -76,14 +84,61 @@
     </header>
     <section id="viewer">
       <div class="empty welcome">
-        <strong>PDF Voice Reader Web</strong><br>
-        Add a PDF file or paste a direct PDF link. Your library and progress are saved locally in this browser.
+        <strong>Orbit</strong><br>
+        Add a PDF or open a PDF link. Your library and progress stay on this device.
       </div>
     </section>
   </main>
 
+  <nav id="mobileDock" class="mobileDock" aria-label="Orbit mobile navigation">
+    <button id="dockLibrary" type="button" class="dockButton active" aria-label="Library" aria-pressed="true">
+      <span class="dockIcon dockLibraryIcon" aria-hidden="true"></span>
+      <span>Library</span>
+    </button>
+    <button id="dockReader" type="button" class="dockButton" aria-label="Reader" aria-pressed="false">
+      <span class="dockIcon dockReaderIcon" aria-hidden="true"></span>
+      <span>Reader</span>
+    </button>
+    <button id="dockRead" type="button" class="dockButton dockPrimary" aria-label="Read">
+      <span class="dockIcon dockReadIcon" aria-hidden="true"></span>
+      <span>Read</span>
+    </button>
+    <button id="dockPause" type="button" class="dockButton" aria-label="Pause">
+      <span class="dockIcon dockPauseIcon" aria-hidden="true"></span>
+      <span>Pause</span>
+    </button>
+    <button id="dockMark" type="button" class="dockButton dockMark" aria-label="Mark" disabled>
+      <span class="dockIcon dockDotIcon" aria-hidden="true"></span>
+      <span>Mark</span>
+    </button>
+  </nav>
+
   <script type="module" src="app.js"></script>
   <script>
+    function orbitSetMobileView(view) {
+      document.body.dataset.mobileView = view === 'reader' ? 'reader' : 'library';
+      document.body.classList.remove('settingsOpen');
+      const libraryActive = document.body.dataset.mobileView === 'library';
+      document.getElementById('dockLibrary')?.classList.toggle('active', libraryActive);
+      document.getElementById('dockReader')?.classList.toggle('active', !libraryActive);
+      document.getElementById('dockLibrary')?.setAttribute('aria-pressed', String(libraryActive));
+      document.getElementById('dockReader')?.setAttribute('aria-pressed', String(!libraryActive));
+    }
+
+    document.getElementById('dockLibrary')?.addEventListener('click', () => orbitSetMobileView('library'));
+    document.getElementById('dockReader')?.addEventListener('click', () => orbitSetMobileView('reader'));
+    document.getElementById('dockRead')?.addEventListener('click', () => {
+      orbitSetMobileView('reader');
+      document.getElementById('playBtn')?.click();
+    });
+    document.getElementById('dockPause')?.addEventListener('click', () => document.getElementById('pauseBtn')?.click());
+    document.getElementById('mobileSettingsBtn')?.addEventListener('click', () => {
+      document.body.classList.toggle('settingsOpen');
+      document.getElementById('mobileSettingsBtn')?.setAttribute('aria-expanded', String(document.body.classList.contains('settingsOpen')));
+    });
+    document.addEventListener('click', event => {
+      if (event.target.closest('.pdfItem')) setTimeout(() => orbitSetMobileView('reader'), 0);
+    });
     if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
       window.addEventListener('load', () => navigator.serviceWorker.register('./service-worker.js').catch(() => {}));
     }
