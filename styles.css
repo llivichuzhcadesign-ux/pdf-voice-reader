@@ -3,7 +3,7 @@
 html,body{height:100%}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#000;color:#fff;display:flex}
 #library{width:300px;background:#000;color:#fff;border-right:1px solid #303030;padding:18px;overflow:auto}
-#library h1{margin:0 0 16px;font-size:22px;font-weight:850;letter-spacing:-.035em}
+#library h1{margin:0 0 6px;font-size:28px;font-weight:900;letter-spacing:0}
 #library h2{font-size:12px;text-transform:uppercase;letter-spacing:.16em;color:#aaa;margin:24px 0 10px}
 .upload{display:block;background:#fff;color:#000;border:1px solid #fff;border-radius:8px;text-align:center;padding:12px;font-weight:850;cursor:pointer}
 .upload:hover{background:#000;color:#fff}
@@ -23,6 +23,7 @@ body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-ser
 .delete:hover{background:#fff;color:#000;border-color:#fff}
 main{flex:1;min-width:0;display:flex;flex-direction:column;background:#000;color:#fff}
 #toolbar{height:auto;min-height:64px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#000;color:#fff;border-bottom:1px solid #303030;padding:10px 14px;position:sticky;top:0;z-index:10}
+.mobileTopLine{display:none}
 .controlGroup{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .primaryControls{padding-right:8px;border-right:1px solid #333}
 .flowControls{gap:10px}
@@ -46,8 +47,8 @@ select:focus,input:focus,button:focus,.upload:focus-within{outline:2px solid #ff
 .pdfPreview h3,.textReader h3{margin:0;padding:12px 14px;background:#000;color:#fff;border-bottom:1px solid #333;font-size:14px;font-weight:850;letter-spacing:.01em}
 .pdfEmbed{width:100%;height:calc(100vh - 150px);border:0;display:block;background:#111}
 .pdfEmbed.inverted{filter:invert(100%) hue-rotate(180deg)}
-.textContent{padding:18px;line-height:1.9;font-size:18px;max-width:900px;color:#fff;background:#000}
-.unit{border-radius:5px;padding:2px 3px;margin-right:2px;color:#fff;transition:background .15s,color .15s,opacity .15s}
+.textContent{padding:18px;line-height:1.9;font-size:18px;max-width:900px;color:#fff;background:#000;overflow-wrap:anywhere}
+.unit{border-radius:5px;padding:2px 3px;margin-right:2px;color:#fff;transition:background .15s,color .15s,opacity .15s;overflow-wrap:anywhere}
 .unit.kind-heading{display:block;font-weight:850;font-size:1.05em;margin:14px 0 7px;line-height:1.45;text-transform:none;letter-spacing:.01em}
 .unit.kind-term{font-weight:760}
 .unit.kind-paragraph-start{margin-left:0}
@@ -57,6 +58,7 @@ select:focus,input:focus,button:focus,.upload:focus-within{outline:2px solid #ff
 .hint{font-size:14px;color:#ddd;margin:0 0 14px;background:#000;border:1px solid #333;border-radius:8px;padding:12px;line-height:1.45}
 .modeBadge{display:inline-block;border:1px solid #555;border-radius:99px;padding:2px 8px;margin-left:6px;color:#ccc;font-size:12px;font-weight:700}
 .loading{background:#000;color:#fff;border:1px solid #333;border-radius:8px;padding:16px;font-size:16px}
+.mobileDock{display:none}
 @media(max-width:1200px){#docTitle{margin-left:0;width:100%;max-width:none}.primaryControls{border-right:0;padding-right:0}}
 @media(max-width:1050px){body{display:block}#library{width:auto;border-right:0;border-bottom:1px solid #333}main{min-height:70vh}.readerGrid{grid-template-columns:1fr}.pdfEmbed{height:50vh}}
 @media(max-width:700px){input[type="range"]{width:90px}.controlGroup{width:100%}.primaryControls button{flex:1}.flowControls label{width:100%;justify-content:space-between}select{max-width:55vw}.advancedControls label{width:100%;justify-content:space-between}}
@@ -71,4 +73,58 @@ body.ai-mode .browserOnly{display:none}
 .installBox{margin-top:10px;border:1px solid #333;border-radius:8px;padding:10px;background:#050505;color:#fff;font-size:12px;line-height:1.35}
 .installBox strong{display:block;margin-bottom:3px}
 .welcome{max-width:720px}
-@media(max-width:700px){#library{padding:14px;padding-top:calc(14px + env(safe-area-inset-top))}#toolbar{padding-left:calc(12px + env(safe-area-inset-left));padding-right:calc(12px + env(safe-area-inset-right))}#viewer{padding-bottom:calc(16px + env(safe-area-inset-bottom))}.pdfEmbed{height:42vh}.textContent{font-size:17px;line-height:1.85;padding:14px}.primaryControls button{min-width:30%}}
+
+@media(max-width:700px){
+  html,body{height:100%;overflow:hidden}
+  body{display:block;padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+  body[data-mobile-view="reader"] #library{display:none}
+  body[data-mobile-view="library"] #library{display:block;height:42vh;overflow:auto;border-bottom:1px solid #333;padding:calc(14px + env(safe-area-inset-top)) 14px 10px}
+  main{height:calc(100vh - 96px - env(safe-area-inset-bottom));min-height:0;overflow:hidden}
+  body[data-mobile-view="library"] main{height:58vh}
+  #library h1{font-size:25px;margin-bottom:4px}
+  #library h2{display:none}
+  .intro{margin-bottom:10px}
+  .upload{padding:10px;margin-bottom:8px}
+  .urlBox,.installBox{margin-top:8px}
+  #status{margin:7px 0;min-height:18px;font-size:12px}
+  #pdfList{display:flex;gap:8px;overflow:auto;padding-bottom:4px}
+  .pdfItem{flex:0 0 210px;margin:0;padding:10px 34px 10px 10px;border-radius:10px}
+  .pdfItem strong{font-size:13px}
+  #toolbar{position:sticky;top:0;display:block;padding:10px 12px;background:rgba(0,0,0,.94);border-bottom:1px solid #222;backdrop-filter:blur(14px);z-index:20}
+  .mobileTopLine{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+  .mobileTopLine strong{display:block;font-size:13px;line-height:1.1;font-weight:900;color:#fff}
+  .mobileTopLine span{display:block;margin-top:3px;color:#aaa;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:58vw}
+  #mobileSettingsBtn{border-radius:999px;padding:8px 10px;background:#000}
+  .primaryControls{display:none}
+  .flowControls,.advancedControls{display:none}
+  body.settingsOpen .flowControls{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid #222}
+  body.settingsOpen .advancedControls:not([hidden]){display:grid;grid-template-columns:1fr;gap:10px}
+  .flowControls label,.advancedControls label{width:100%;justify-content:space-between}
+  select{max-width:62vw}
+  input[type="range"]{width:42vw}
+  #docTitle{display:none}
+  #viewer{height:calc(100% - 58px);overflow:auto;padding:8px 8px 118px;background:#000}
+  .readerGrid{grid-template-columns:1fr;gap:10px}
+  .pdfPreview,.textReader{border-radius:0}
+  .pdfPreview h3,.textReader h3{padding:9px 10px;font-size:12px}
+  .pdfEmbed{height:42vh}
+  .textContent{padding:18px 14px 122px;max-width:100%;font-size:clamp(17px,5.2vw,22px);line-height:1.85}
+  .hint{display:none}
+  .mobileDock{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));z-index:80;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;width:min(92vw,430px);height:74px;padding:8px 10px;border:1px solid rgba(255,255,255,.2);border-radius:34px;background:rgba(20,24,24,.78);box-shadow:0 12px 34px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.1);backdrop-filter:blur(18px);transform:translateX(-50%)}
+  .dockButton{display:grid;place-items:center;gap:3px;min-width:0;padding:5px 2px;border:0;border-radius:26px;background:transparent;color:#fff}
+  .dockButton:hover,.dockButton.active{background:rgba(255,255,255,.13);color:#fff}
+  .dockButton:disabled{opacity:.35}
+  .dockButton span:last-child{font-size:10px;font-weight:800;line-height:1}
+  .dockPrimary{background:rgba(255,255,255,.16)}
+  .dockMark.active,.dockMark:hover{background:rgba(255,43,43,.18)}
+  .dockIcon{position:relative;display:block;width:25px;height:25px}
+  .dockLibraryIcon{border:2px solid #fff;border-radius:5px;box-shadow:9px 0 0 -5px #fff,-9px 0 0 -5px #fff}
+  .dockReaderIcon{border:2px solid #fff;border-radius:4px}
+  .dockReaderIcon::before{content:"";position:absolute;left:5px;right:5px;top:6px;height:2px;background:#fff;box-shadow:0 6px 0 #fff}
+  .dockReadIcon{border-left:17px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;width:0;height:0;margin-left:5px}
+  .dockPauseIcon::before,.dockPauseIcon::after{content:"";position:absolute;top:2px;bottom:2px;width:6px;border-radius:4px;background:#fff}
+  .dockPauseIcon::before{left:5px}
+  .dockPauseIcon::after{right:5px}
+  .dockDotIcon{border:2px solid #fff;border-radius:50%}
+  .dockDotIcon::after{content:"";position:absolute;right:-2px;bottom:-2px;width:9px;height:9px;border-radius:50%;background:#ff2b2b;box-shadow:0 0 0 2px rgba(20,24,24,.9)}
+}
