@@ -1,7 +1,7 @@
 {
-  "name": "PDF Voice Reader",
-  "short_name": "PDF Voice",
-  "description": "A simple black-and-white PDF reader that reads aloud and remembers your progress.",
+  "name": "Orbit",
+  "short_name": "Orbit",
+  "description": "Orbit is an eyes-free PDF reader with saved progress, browser voices, and Read, Pause, Mark controls.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
