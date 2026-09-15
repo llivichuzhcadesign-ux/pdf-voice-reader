@@ -1,4 +1,4 @@
-const CACHE_NAME = 'orbit-pwa-v6';
+const CACHE_NAME = 'orbit-pwa-v7';
 const APP_SHELL = [
   './',
   './index.html',
@@ -24,6 +24,23 @@ const GOLD_HIGHLIGHT_CSS = `
 
 const IOS_MARK_BRIDGE_JS = `
 \n;(() => {
+  const orbitInvertDefaultVersion = 1;
+  DEFAULT_SETTINGS.pdfInverted = true;
+  DEFAULT_SETTINGS.invertDefaultVersion = orbitInvertDefaultVersion;
+
+  const orbitOriginalLoadSettings = loadSettings;
+  loadSettings = async function(...args) {
+    await orbitOriginalLoadSettings(...args);
+    const saved = await storageGet(SETTINGS_KEY) || {};
+    if (saved.invertDefaultVersion !== orbitInvertDefaultVersion) {
+      settings.pdfInverted = true;
+      settings.invertDefaultVersion = orbitInvertDefaultVersion;
+      await storageSet({ [SETTINGS_KEY]: settings });
+      applySettingsToControls();
+      applyInvertState();
+    }
+  };
+
   const orbitBookmarkKey = id => 'bookmark_' + id;
   let orbitBookmarkIndex = null;
 
