@@ -1,4 +1,4 @@
-const CACHE_NAME = 'orbit-pwa-v11';
+const CACHE_NAME = 'orbit-pwa-v12';
 const APP_SHELL = [
   './',
   './index.html',
@@ -151,6 +151,7 @@ const ORBIT_VIEWER_JS = `
     scale: 1,
     fitMode: true,
     baseWidth: 760,
+    baseHeight: 980,
     rendering: new Set(),
     rendered: new Map(),
     destroyed: false
@@ -180,6 +181,7 @@ const ORBIT_VIEWER_JS = `
       scale: 1,
       fitMode: true,
       baseWidth: 760,
+      baseHeight: 980,
       rendering: new Set(),
       rendered: new Map(),
       destroyed: false
@@ -264,17 +266,15 @@ const ORBIT_VIEWER_JS = `
     const viewer = document.getElementById('orbitPdfViewer');
     if (!viewer || !orbitPdfState.pages.length) return;
     const previousPage = preserve ? orbitPdfState.currentPage : 1;
-    let scale = orbitPdfState.scale;
     if (orbitPdfState.fitMode) {
-      scale = orbitPageWidth() / orbitPdfState.baseWidth;
+      const scale = orbitPageWidth() / orbitPdfState.baseWidth;
       orbitPdfState.scale = Math.min(3.5, Math.max(0.35, scale));
     }
     orbitPdfState.rendered.clear();
     orbitPdfState.pages.forEach((item) => {
-      const viewport = item.baseViewport;
       item.scale = orbitPdfState.scale;
-      item.width = Math.round(viewport.width * item.scale);
-      item.height = Math.round(viewport.height * item.scale);
+      item.width = Math.round(item.baseWidth * item.scale);
+      item.height = Math.round(item.baseHeight * item.scale);
       item.shell.style.width = item.width + 'px';
       item.shell.style.height = item.height + 'px';
       const canvas = item.canvas;
@@ -308,20 +308,19 @@ const ORBIT_VIEWER_JS = `
       if (orbitPdfState.destroyed) return;
       orbitPdfState.document = pdf;
       orbitPdfState.pageCount = pdf.numPages;
-      viewer.innerHTML = '<div class="orbitPdfStage" id="orbitPdfStage"></div>';
-      const stage = document.getElementById('orbitPdfStage');
       const firstPage = await pdf.getPage(1);
       const firstViewport = firstPage.getViewport({ scale: 1 });
       orbitPdfState.baseWidth = firstViewport.width || 760;
+      orbitPdfState.baseHeight = firstViewport.height || 980;
+      viewer.innerHTML = '<div class="orbitPdfStage" id="orbitPdfStage"></div>';
+      const stage = document.getElementById('orbitPdfStage');
       for (let pageNum = 1; pageNum <= pdf.numPages; pageNum += 1) {
-        const page = pageNum === 1 ? firstPage : await pdf.getPage(pageNum);
-        const viewport = page.getViewport({ scale: 1 });
         const shell = document.createElement('div');
         shell.className = 'orbitPdfPage';
         shell.dataset.page = String(pageNum);
         shell.innerHTML = '<canvas aria-label="Page ' + pageNum + '"></canvas>';
         stage.appendChild(shell);
-        orbitPdfState.pages.push({ pageNum, page, baseViewport: viewport, shell, canvas: shell.querySelector('canvas'), scale: 1, width: viewport.width, height: viewport.height });
+        orbitPdfState.pages.push({ pageNum, page: pageNum === 1 ? firstPage : null, baseWidth: orbitPdfState.baseWidth, baseHeight: orbitPdfState.baseHeight, shell, canvas: shell.querySelector('canvas'), scale: 1, width: orbitPdfState.baseWidth, height: orbitPdfState.baseHeight });
       }
       orbitAttachPdfControls();
       orbitLayoutPdfPages(false);
@@ -347,6 +346,7 @@ const ORBIT_VIEWER_JS = `
     if (orbitPdfState.rendered.get(item.pageNum) === key || orbitPdfState.rendering.has(key)) return;
     orbitPdfState.rendering.add(key);
     try {
+      if (!item.page) item.page = await orbitPdfState.document.getPage(item.pageNum);
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const viewport = item.page.getViewport({ scale: item.scale * dpr });
       item.canvas.width = Math.round(viewport.width);
