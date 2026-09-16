@@ -1,4 +1,4 @@
-const CACHE_NAME = 'orbit-pwa-v10';
+const CACHE_NAME = 'orbit-pwa-v11';
 const APP_SHELL = [
   './',
   './index.html',
@@ -414,68 +414,70 @@ const ORBIT_VIEWER_JS = `
   };
 
   renderReader = function(name, pdfUrl, extractedText) {
-    readerView.classList.add('active');
-    emptyState.hidden = true;
-    readerTitle.textContent = name;
-    main.innerHTML = '';
-    const shell = document.createElement('div');
-    shell.className = 'readerGrid';
-    shell.innerHTML = '<div class="pdfPreview"><h3><span>PDF preview</span><span class="orbitPdfToolbar"><button class="orbitPdfButton" id="orbitPdfPrev" type="button" aria-label="Previous page">‹</button><span class="orbitPdfChip" id="orbitPdfPageLabel">1 / 1</span><button class="orbitPdfButton" id="orbitPdfNext" type="button" aria-label="Next page">›</button><button class="orbitPdfButton" id="orbitPdfZoomOut" type="button" aria-label="Zoom out">−</button><span class="orbitPdfChip" id="orbitPdfZoomLabel">100%</span><button class="orbitPdfButton" id="orbitPdfZoomIn" type="button" aria-label="Zoom in">+</button><button class="orbitPdfButton" id="orbitPdfFit" type="button">Fit</button><button class="orbitPdfButton" id="orbitPdfActual" type="button">100</button></span></h3><div class="orbitPdfViewer inverted" id="orbitPdfViewer"></div></div><div class="textReader"><h3>Read-aloud text <span id="modeBadge" class="badge">' + currentStyleLabel() + '</span></h3><div class="textContent" id="textContent"></div></div>';
-    main.appendChild(shell);
-    applyInvertState();
+    const viewer = $('viewer');
+    viewer.innerHTML = '';
+    const grid = document.createElement('div');
+    grid.className = 'readerGrid';
+    grid.innerHTML = '<div class="pdfPreview"><h3><span>PDF preview</span><span class="orbitPdfToolbar"><button class="orbitPdfButton" id="orbitPdfPrev" type="button" aria-label="Previous page">‹</button><span class="orbitPdfChip" id="orbitPdfPageLabel">1 / 1</span><button class="orbitPdfButton" id="orbitPdfNext" type="button" aria-label="Next page">›</button><button class="orbitPdfButton" id="orbitPdfZoomOut" type="button" aria-label="Zoom out">−</button><span class="orbitPdfChip" id="orbitPdfZoomLabel">100%</span><button class="orbitPdfButton" id="orbitPdfZoomIn" type="button" aria-label="Zoom in">+</button><button class="orbitPdfButton" id="orbitPdfFit" type="button">Fit</button><button class="orbitPdfButton" id="orbitPdfActual" type="button">100</button></span></h3><div class="orbitPdfViewer inverted" id="orbitPdfViewer"></div></div><div class="textReader"><h3>Read-aloud text <span id="modeBadge" class="modeBadge"></span></h3><div class="textContent" id="textContent"></div></div>';
+    viewer.appendChild(grid);
     renderTextPane(extractedText);
+    applyInvertState();
     if (orbitCurrentPdfBuffer) orbitRenderPdf(orbitCurrentPdfBuffer);
   };
 
   renderTextPane = function(extractedText) {
-    const container = document.getElementById('textContent');
-    if (!container) return;
-    container.innerHTML = '';
-    const chunks = buildChunks(extractedText);
     textUnits = [];
+    const target = $('textContent');
+    if (!target) return;
+    target.innerHTML = '';
+
+    if (!String(extractedText || '').trim()) {
+      target.innerHTML = '<div class="warning"><strong>No readable text found.</strong><br>This PDF may be scanned as images, protected, or missing a usable text map. Try an OCR version of the PDF.</div>';
+      setStatus('PDF saved, but no readable text was found.');
+      return;
+    }
+
+    if ($('modeBadge')) $('modeBadge').textContent = currentStyleLabel();
+
+    const hint = document.createElement('p');
+    hint.className = 'hint';
+    hint.textContent = currentHintText();
+    target.appendChild(hint);
+
+    const chunks = buildChunks(extractedText, settings.style);
     let currentPage = 1;
     chunks.forEach((chunk) => {
       if (chunk.type === 'page') {
         const parsedPage = Number(String(chunk.text || '').replace(/[^0-9]/g, ''));
         if (Number.isFinite(parsedPage) && parsedPage > 0) currentPage = parsedPage;
-        const page = document.createElement('div');
-        page.className = 'pageLabel';
-        page.textContent = chunk.text;
-        container.appendChild(page);
+        const br = document.createElement('span');
+        br.className = 'pageBreak';
+        br.textContent = chunk.text;
+        target.appendChild(br);
         return;
       }
-      if (chunk.type === 'heading') {
-        const heading = document.createElement('div');
-        heading.className = 'headingUnit';
-        heading.textContent = chunk.text;
-        container.appendChild(heading);
-        textUnits.push({ text: chunk.text, span: heading, type: 'heading', page: currentPage });
-        return;
-      }
-      if (chunk.type === 'bullet') {
-        const bullet = document.createElement('p');
-        bullet.className = 'bulletUnit';
-        bullet.textContent = chunk.text;
-        container.appendChild(bullet);
-        textUnits.push({ text: chunk.text, span: bullet, type: 'bullet', page: currentPage });
-        return;
-      }
-      const p = document.createElement('p');
-      chunk.text.split(/(?<=[.!?])\s+/).filter(Boolean).forEach((sentence, idx) => {
-        const span = document.createElement('span');
-        span.className = 'unit';
-        span.textContent = sentence.trim() + ' ';
-        p.appendChild(span);
-        textUnits.push({ text: sentence.trim(), span, type: 'sentence', page: currentPage });
-        if (idx < chunk.text.length - 1) p.appendChild(document.createTextNode(' '));
+
+      const span = document.createElement('span');
+      span.className = 'unit kind-' + (chunk.kind || 'sentence') + (chunk.paragraphStart ? ' kind-paragraph-start' : '');
+      span.textContent = chunk.displayText + (chunk.kind === 'heading' ? '' : ' ');
+      span.dataset.index = textUnits.length;
+      span.onclick = () => {
+        currentIndex = Number(span.dataset.index);
+        setCurrent(currentIndex);
+        scrollToIndex(currentIndex);
+      };
+      target.appendChild(span);
+      textUnits.push({
+        text: chunk.speechText || chunk.displayText,
+        displayText: chunk.displayText,
+        span,
+        kind: chunk.kind || 'sentence',
+        paragraphEnd: !!chunk.paragraphEnd,
+        page: currentPage
       });
-      container.appendChild(p);
     });
-    if (textUnits.length) {
-      setStatus(textUnits.length + ' sections ready.');
-    } else {
-      setStatus('No readable text found. Try another PDF.');
-    }
+
+    setStatus(textUnits.length + ' spoken sections ready in ' + currentStyleLabel() + ' mode.');
   };
 
   setCurrent = function(i) {
