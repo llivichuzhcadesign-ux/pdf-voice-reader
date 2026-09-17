@@ -1,4 +1,4 @@
-const CACHE_NAME = 'orbit-pwa-v12';
+const CACHE_NAME = 'orbit-pwa-v13';
 const APP_SHELL = [
   './',
   './index.html',
@@ -134,6 +134,136 @@ body[data-reader-pane='pdf'] .orbitPdfViewer {
     height: 2rem;
     min-width: 2rem;
     padding: 0 0.55rem;
+  }
+}
+@media (max-width: 700px) {
+  body[data-mobile-view='reader'][data-reader-pane='pdf'] main {
+    height: calc(100dvh - 96px - env(safe-area-inset-bottom)) !important;
+  }
+  body[data-reader-pane='pdf'] #toolbar {
+    min-height: 58px !important;
+    padding: 8px 10px !important;
+    border-bottom-color: rgba(120,130,142,.12) !important;
+    box-shadow: 0 8px 22px rgba(0,0,0,.22) !important;
+  }
+  body[data-reader-pane='pdf'] .mobileTopLine {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    gap: 8px !important;
+    align-items: center !important;
+  }
+  body[data-reader-pane='pdf'] .mobileTopLine strong {
+    display: block !important;
+    font-size: 24px !important;
+    line-height: 1 !important;
+    letter-spacing: -0.02em !important;
+    white-space: nowrap !important;
+  }
+  body[data-reader-pane='pdf'] #mobileDocTitle {
+    display: none !important;
+  }
+  body[data-reader-pane='pdf'] .mobileReaderTools {
+    justify-content: flex-end !important;
+    gap: 6px !important;
+    min-width: 0 !important;
+  }
+  body[data-reader-pane='pdf'] .paneSwitch {
+    grid-template-columns: repeat(2, minmax(42px, 1fr)) !important;
+    gap: 2px !important;
+    padding: 2px !important;
+  }
+  body[data-reader-pane='pdf'] .paneSwitch button {
+    height: 32px !important;
+    padding: 0 9px !important;
+    font-size: 11px !important;
+  }
+  body[data-reader-pane='pdf'] #mobileInvertBtn,
+  body[data-reader-pane='pdf'] #mobileSettingsBtn {
+    height: 36px !important;
+    min-width: 36px !important;
+  }
+  body[data-reader-pane='pdf'] #mobileInvertBtn {
+    padding: 0 10px !important;
+  }
+  body[data-reader-pane='pdf'] #viewer {
+    height: calc(100dvh - 154px - env(safe-area-inset-bottom)) !important;
+    padding: 0 0 calc(96px + env(safe-area-inset-bottom)) !important;
+    overflow: hidden !important;
+  }
+  body[data-reader-pane='pdf'] .readerGrid,
+  body[data-reader-pane='pdf'] .pdfPreview {
+    height: 100% !important;
+    min-height: 0 !important;
+    gap: 0 !important;
+  }
+  body[data-reader-pane='pdf'] .pdfPreview {
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+    background: #050505 !important;
+  }
+  body[data-reader-pane='pdf'] .pdfPreview h3 {
+    display: flex !important;
+    align-items: center !important;
+    min-height: 52px !important;
+    padding: 8px 8px !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scrollbar-width: none !important;
+    background: rgba(11,13,15,.92) !important;
+  }
+  body[data-reader-pane='pdf'] .pdfPreview h3::-webkit-scrollbar {
+    display: none !important;
+  }
+  body[data-reader-pane='pdf'] .pdfPreview h3 > span:first-child {
+    display: none !important;
+  }
+  body[data-reader-pane='pdf'] .orbitPdfToolbar {
+    width: 100% !important;
+    margin: 0 !important;
+    gap: 5px !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+  }
+  body[data-reader-pane='pdf'] .orbitPdfButton,
+  body[data-reader-pane='pdf'] .orbitPdfChip {
+    height: 36px !important;
+    min-width: 38px !important;
+    border-radius: 12px !important;
+    padding: 0 9px !important;
+    font-size: 15px !important;
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+  }
+  body[data-reader-pane='pdf'] #orbitPdfPageLabel {
+    min-width: 74px !important;
+  }
+  body[data-reader-pane='pdf'] #orbitPdfZoomLabel {
+    min-width: 54px !important;
+  }
+  body[data-reader-pane='pdf'] #orbitPdfFit,
+  body[data-reader-pane='pdf'] #orbitPdfActual {
+    min-width: 48px !important;
+  }
+  body[data-reader-pane='pdf'] .orbitPdfViewer {
+    height: calc(100% - 52px) !important;
+    min-height: 0 !important;
+    padding: 0.55rem 0 calc(7rem + env(safe-area-inset-bottom)) !important;
+    border-top-color: rgba(255,255,255,.06) !important;
+  }
+  body[data-reader-pane='pdf'] .orbitPdfStage {
+    gap: 0.8rem !important;
+  }
+  body[data-reader-pane='pdf'] .orbitPdfPage {
+    box-shadow: 0 0 0 1px rgba(220,172,66,.18), 0 18px 42px rgba(0,0,0,.5) !important;
+  }
+  body[data-reader-pane='pdf'] .orbitReadingBadge {
+    top: 0.55rem !important;
+    left: 0.6rem !important;
+    font-size: 0.76rem !important;
+    padding: 0.32rem 0.62rem !important;
   }
 }
 `;
@@ -502,6 +632,11 @@ const IOS_MARK_BRIDGE_JS = `
   const getSelectedId = () => selectedId;
   const getCurrentIndex = () => currentIndex;
 
+  function ensureOrbitHeader() {
+    const brand = document.querySelector('.mobileTopLine strong');
+    if (brand) brand.textContent = 'Orbit';
+  }
+
   function ensureInvertDefault() {
     if (!settings || settings.pdfInverted === true) return;
     settings.pdfInverted = true;
@@ -509,15 +644,32 @@ const IOS_MARK_BRIDGE_JS = `
     if (typeof applyInvertState === 'function') applyInvertState();
   }
 
+  async function markCurrentSpot() {
+    const id = getSelectedId();
+    if (!id || !textUnits.length) {
+      setStatus('Select a PDF first.');
+      syncDockMark();
+      return;
+    }
+    const index = Math.max(0, Math.min(getCurrentIndex() || 0, textUnits.length - 1));
+    await storageSet({ [progressKey(id)]: { index, updatedAt: Date.now(), style: settings.style } });
+    markReadThrough(index - 1);
+    setStatus('Marked resume point: section ' + (index + 1) + '.');
+    renderList();
+    syncDockMark();
+  }
+
   const originalLoadSettings = loadSettings;
   loadSettings = function() {
     originalLoadSettings();
+    ensureOrbitHeader();
     ensureInvertDefault();
   };
 
   const originalApplyDockState = applyDockState;
   applyDockState = function() {
     originalApplyDockState();
+    ensureOrbitHeader();
     syncDockMark();
   };
 
@@ -530,20 +682,30 @@ const IOS_MARK_BRIDGE_JS = `
   const originalRenderTextPane = renderTextPane;
   renderTextPane = function(extractedText) {
     originalRenderTextPane(extractedText);
+    ensureOrbitHeader();
     syncDockMark();
   };
 
   const originalLoadPdf = loadPdf;
   loadPdf = async function(id) {
     const result = await originalLoadPdf(id);
+    ensureOrbitHeader();
     syncDockMark();
     return result;
   };
 
   window.addEventListener('pageshow', () => {
+    ensureOrbitHeader();
     ensureInvertDefault();
     syncDockMark();
   });
+
+  document.getElementById('dockMark')?.addEventListener('click', (event) => {
+    event.preventDefault();
+    markCurrentSpot();
+  });
+
+  ensureOrbitHeader();
 
   function syncDockMark() {
     const mark = document.getElementById('dockMark') || markBtn;
