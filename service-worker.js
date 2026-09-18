@@ -1,4 +1,4 @@
-const CACHE_NAME = 'orbit-pwa-v16';
+const CACHE_NAME = 'orbit-pwa-v17';
 const APP_SHELL = ['./','./index.html','./styles.css','./app.js','./manifest.webmanifest','./vendor/pdf.min.mjs','./vendor/pdf.worker.min.mjs'];
 const LEGACY_SW_URL = 'https://raw.githubusercontent.com/llivichuzhcadesign-ux/pdf-voice-reader/b4f146a79e9bf4f7bd36fde5d70dade2dbd25b70/service-worker.js';
 
@@ -101,6 +101,50 @@ const ORBIT_LIBRARY_REFINEMENT_JS = `
 })();
 `;
 
+const ORBIT_LIBRARY_COVERFLOW_CSS = `
+.orbitGalleryRailItem{will-change:transform,opacity}.orbitGalleryRail{overscroll-behavior-x:contain}.orbitBookCover.rail{-webkit-box-reflect:below 10px linear-gradient(transparent 58%,rgba(0,0,0,.34));transform-style:preserve-3d}.orbitBookCover.rail .orbitBookSource{font-size:9px!important;opacity:.84}.orbitBookCover.rail .orbitBookProgress{font-size:9px!important;line-height:1.15!important;color:rgba(255,255,255,.72)!important}.orbitBookCover.rail strong{display:block!important;position:absolute!important;left:12px!important;right:10px!important;bottom:32px!important;margin:0!important;font-size:11px!important;line-height:1.06!important;font-weight:720!important;letter-spacing:0!important;display:-webkit-box!important;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.orbitBookCover.rail::before{background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 24%),linear-gradient(130deg,transparent 0 42%,rgba(255,255,255,.08) 44%,transparent 50%)!important}.orbitBookCover.rail::after{border-color:rgba(255,255,255,.08)!important}@media(max-width:1050px){body[data-mobile-view='library'] #library{background:radial-gradient(circle at 50% 18%,rgba(255,255,255,.08),transparent 22rem),linear-gradient(180deg,#111 0,#050505 28%,#000 100%)!important}.orbitGalleryList{padding-top:48px!important}.orbitGallery{justify-content:center!important}.orbitGalleryStage{display:none!important}.orbitGalleryInfo{order:2!important;margin-top:2px!important;min-height:52px!important}.orbitGalleryInfo h3{font-size:clamp(17px,4.8vw,23px)!important;font-weight:650!important}.orbitGalleryRail{order:1!important;position:relative!important;height:min(55dvh,520px)!important;min-height:330px!important;width:calc(100% + 36px)!important;margin:0 -18px!important;padding:42px 43vw 96px!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:0!important;overflow-x:auto!important;overflow-y:visible!important;scroll-snap-type:x mandatory!important;perspective:1100px!important;mask-image:none!important}.orbitGalleryRail::before{content:'';position:absolute;left:8%;right:8%;bottom:76px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);pointer-events:none}.orbitGalleryRail::after{content:'';position:absolute;left:12%;right:12%;bottom:34px;height:70px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,255,255,.11),transparent 68%);filter:blur(14px);opacity:.75;pointer-events:none}.orbitGalleryRailItem{position:relative!important;z-index:1;flex:0 0 clamp(136px,42vw,224px)!important;margin:0 -32px!important;scroll-snap-align:center!important;transform-origin:center bottom!important;transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .22s ease,filter .22s ease!important}.orbitGalleryRailItem[data-orbit-offset='0']{z-index:9!important;opacity:1!important;filter:drop-shadow(0 24px 42px rgba(0,0,0,.72)) drop-shadow(0 0 42px rgba(255,255,255,.12))!important;transform:translateY(-18px) translateZ(80px) scale(1.08)!important}.orbitGalleryRailItem[data-orbit-offset='-1']{z-index:7!important;opacity:.86!important;transform:translateX(18px) translateY(3px) rotateY(25deg) scale(.92)!important}.orbitGalleryRailItem[data-orbit-offset='1']{z-index:7!important;opacity:.86!important;transform:translateX(-18px) translateY(3px) rotateY(-25deg) scale(.92)!important}.orbitGalleryRailItem[data-orbit-offset='-2']{z-index:5!important;opacity:.64!important;transform:translateX(34px) translateY(16px) rotateY(36deg) scale(.79)!important}.orbitGalleryRailItem[data-orbit-offset='2']{z-index:5!important;opacity:.64!important;transform:translateX(-34px) translateY(16px) rotateY(-36deg) scale(.79)!important}.orbitGalleryRailItem[data-orbit-offset='-3'],.orbitGalleryRailItem[data-orbit-offset='3']{z-index:3!important;opacity:.42!important;filter:blur(.2px)!important;transform:translateY(25px) scale(.68)!important}.orbitGalleryRailItem[data-orbit-offset='far']{z-index:1!important;opacity:.25!important;transform:translateY(32px) scale(.58)!important}.orbitBookCover.rail{width:clamp(136px,42vw,224px)!important;min-width:clamp(136px,42vw,224px)!important;border-radius:16px!important;padding:14px 12px 12px 16px!important;border-color:rgba(255,255,255,.16)!important;box-shadow:0 18px 46px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.08),inset 8px 0 22px rgba(255,255,255,.04)!important}.orbitBookCover.rail[data-cover-ready='true'] .orbitBookArt{inset:12px 10px 42px 15px!important;border-radius:11px!important;opacity:.95!important;filter:grayscale(.42) contrast(1.04) brightness(.96)!important}.orbitGalleryRailItem[data-orbit-offset='0'] .orbitBookCover.rail{border-color:rgba(255,255,255,.24)!important;box-shadow:0 0 80px rgba(255,255,255,.16),0 24px 58px rgba(0,0,0,.75),inset 0 1px 0 rgba(255,255,255,.1)!important}.orbitGalleryRailItem[data-orbit-offset='0'] .orbitBookCover.rail strong{font-weight:780!important;color:#fff!important}.orbitGalleryRailItem:not([data-orbit-offset='0']) .orbitBookCover.rail strong{color:rgba(255,255,255,.76)!important}.orbitBookCover.rail.marked{border-color:rgba(255,255,255,.16)!important}.orbitBookProgress b{flex:0 0 auto!important}}@media(min-width:1051px){.orbitGalleryRail{position:relative!important;min-height:260px!important;align-items:center!important;justify-content:center!important;overflow:visible!important;perspective:1200px!important;mask-image:none!important}.orbitGalleryRailItem{margin:0 -22px!important;transform-origin:center bottom!important}.orbitGalleryRailItem[data-orbit-offset='0']{z-index:9!important;opacity:1!important;transform:translateY(-12px) scale(1.08)!important;filter:drop-shadow(0 22px 44px rgba(255,255,255,.09))}.orbitGalleryRailItem[data-orbit-offset='-1']{z-index:7!important;opacity:.84!important;transform:translateX(10px) rotateY(18deg) scale(.93)!important}.orbitGalleryRailItem[data-orbit-offset='1']{z-index:7!important;opacity:.84!important;transform:translateX(-10px) rotateY(-18deg) scale(.93)!important}.orbitGalleryRailItem[data-orbit-offset='-2'],.orbitGalleryRailItem[data-orbit-offset='2']{z-index:5!important;opacity:.58!important;transform:translateY(10px) scale(.82)!important}.orbitGalleryRailItem[data-orbit-offset='far']{opacity:.32!important;transform:translateY(16px) scale(.72)!important}.orbitBookCover.rail{width:150px!important;min-width:150px!important;border-radius:14px!important}.orbitBookCover.rail[data-cover-ready='true'] .orbitBookArt{filter:grayscale(.5) contrast(1.04) brightness(.94)!important;opacity:.94!important}}\n`;
+
+const ORBIT_LIBRARY_COVERFLOW_JS = `
+;(() => {
+  function qsa(sel, root = document) { return Array.from(root.querySelectorAll(sel)); }
+  function activeIndex(items) {
+    const found = items.findIndex((item) => item.classList.contains('active'));
+    return found >= 0 ? found : 0;
+  }
+  function applyCoverflow(root = document) {
+    qsa('.orbitGallery').forEach((gallery) => {
+      const items = qsa('.orbitGalleryRailItem', gallery);
+      if (!items.length) return;
+      const current = activeIndex(items);
+      items.forEach((item, index) => {
+        const raw = index - current;
+        const offset = Math.abs(raw) > 3 ? 'far' : String(raw);
+        item.dataset.orbitOffset = offset;
+        if (!item.dataset.coverflowBound) {
+          item.dataset.coverflowBound = 'true';
+          item.addEventListener('pointerenter', () => requestAnimationFrame(() => applyCoverflow(gallery)));
+          item.addEventListener('focus', () => requestAnimationFrame(() => applyCoverflow(gallery)));
+          item.addEventListener('click', () => requestAnimationFrame(() => applyCoverflow(gallery)));
+        }
+      });
+      const rail = gallery.querySelector('.orbitGalleryRail');
+      if (rail && !rail.dataset.coverflowCentered) {
+        rail.dataset.coverflowCentered = 'true';
+        requestAnimationFrame(() => items[current]?.scrollIntoView({ block: 'nearest', inline: 'center' }));
+      }
+    });
+  }
+  const previousRenderList = renderList;
+  renderList = async function(...args) {
+    const result = await previousRenderList.apply(this, args);
+    applyCoverflow();
+    return result;
+  };
+  document.addEventListener('scroll', () => requestAnimationFrame(() => applyCoverflow()), true);
+  window.addEventListener('pageshow', () => applyCoverflow());
+  window.addEventListener('resize', () => applyCoverflow());
+})();\n`;
+
 let legacyPatchPromise;
 function extractLegacyConstant(source, name) {
   const pattern = new RegExp('const\\s+' + name + '\\s*=\\s*`([\\s\\S]*?)`;');
@@ -112,10 +156,10 @@ function loadLegacyPatches() {
     legacyPatchPromise = fetch(LEGACY_SW_URL, { cache: 'no-store' })
       .then((response) => response.ok ? response.text() : '')
       .then((source) => ({
-        css: [extractLegacyConstant(source, 'ORBIT_VIEWER_CSS'), extractLegacyConstant(source, 'LIBRARY_GALLERY_CSS')].filter(Boolean).join('\n') + '\n' + ORBIT_LIBRARY_REFINEMENT_CSS,
-        js: [extractLegacyConstant(source, 'ORBIT_VIEWER_JS'), extractLegacyConstant(source, 'LIBRARY_GALLERY_JS'), extractLegacyConstant(source, 'IOS_MARK_BRIDGE_JS')].filter(Boolean).join('\n') + '\n' + ORBIT_LIBRARY_REFINEMENT_JS
+        css: [extractLegacyConstant(source, 'ORBIT_VIEWER_CSS'), extractLegacyConstant(source, 'LIBRARY_GALLERY_CSS')].filter(Boolean).join('\n') + '\n' + ORBIT_LIBRARY_REFINEMENT_CSS + '\n' + ORBIT_LIBRARY_COVERFLOW_CSS,
+        js: [extractLegacyConstant(source, 'ORBIT_VIEWER_JS'), extractLegacyConstant(source, 'LIBRARY_GALLERY_JS'), extractLegacyConstant(source, 'IOS_MARK_BRIDGE_JS')].filter(Boolean).join('\n') + '\n' + ORBIT_LIBRARY_REFINEMENT_JS + '\n' + ORBIT_LIBRARY_COVERFLOW_JS
       }))
-      .catch(() => ({ css: ORBIT_LIBRARY_REFINEMENT_CSS, js: ORBIT_LIBRARY_REFINEMENT_JS }));
+      .catch(() => ({ css: ORBIT_LIBRARY_REFINEMENT_CSS + '\n' + ORBIT_LIBRARY_COVERFLOW_CSS, js: ORBIT_LIBRARY_REFINEMENT_JS + '\n' + ORBIT_LIBRARY_COVERFLOW_JS }));
   }
   return legacyPatchPromise;
 }
